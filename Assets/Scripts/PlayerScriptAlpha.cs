@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -12,6 +12,10 @@ public class PlayerScriptAlpha : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
-        
+	    Move((float)0.01);
     }
+    
+	public void Move(float moveLength) {
+		transform.Translate(new Vector3(moveLength, moveLength, moveLength));
+	}
 }
