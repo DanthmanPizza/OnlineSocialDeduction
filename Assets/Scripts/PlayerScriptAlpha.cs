@@ -1,16 +1,15 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Events;
-using Random = System.Random;
 
 public class PlayerScriptAlpha : MonoBehaviour {
 	public GameObject card;
+	public int playerNum = 1;
+	public int numPlayers = 5;
 
     // Start is called before the first frame update
 	void Awake() {
-		//Random rand = new Random();
-		//getInPosition(rand.Next(5), 5);
+		getInPosition();
     }
 
 	// Update is called once per frame
@@ -18,7 +17,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	    
 	}
 
-	private void getInPosition(int playerNum, int numPlayers) {
+	public void getInPosition() {
 		transform.Rotate(0, playerNum * 360 / numPlayers, 0);
 		transform.Translate(0, 0, 7);
 		transform.Rotate(0, 180, 0);
