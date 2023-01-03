@@ -5,17 +5,17 @@ using UnityEngine;
 public class PlayerScriptAlpha : MonoBehaviour {
 	public GameObject card;
 	public int playerNum;
-	public int numPlayers = 5;
+	public int numPlayers;
 
     // Start is called before the first frame update
 	void Awake() {
-		PlayerNumFinder();
-		getInPosition();
+		playerNum = PlayerNumFinder();
     }
 
 	// Update is called once per frame
-	void Update() {
-	    
+	void StartGame() {
+	    numPlayers = PlayerNumFinder();
+		getInPosition();
 	}
 
 	public void getInPosition() {
@@ -25,7 +25,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 		transform.Rotate(0, 180, 0);
 	}
 
-	public void PlayerNumFinder() {
-		playerNum = GameObject.FindGameObjectsWithTag("Player").Length - 1;
+	public int PlayerNumFinder() {
+		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 }
