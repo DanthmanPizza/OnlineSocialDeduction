@@ -4,11 +4,12 @@ using UnityEngine;
 
 public class PlayerScriptAlpha : MonoBehaviour {
 	public GameObject card;
-	public int playerNum = 1;
+	public int playerNum;
 	public int numPlayers = 5;
 
     // Start is called before the first frame update
 	void Awake() {
+		PlayerNumFinder();
 		getInPosition();
     }
 
@@ -18,8 +19,13 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	}
 
 	public void getInPosition() {
+		
 		transform.Rotate(0, playerNum * 360 / numPlayers, 0);
 		transform.Translate(0, 0, 7);
 		transform.Rotate(0, 180, 0);
+	}
+
+	public void PlayerNumFinder() {
+		playerNum = GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 }
