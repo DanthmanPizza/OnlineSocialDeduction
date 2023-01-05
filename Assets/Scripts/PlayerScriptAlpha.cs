@@ -28,4 +28,8 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	public int PlayerNumFinder() {
 		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
+
+	public void MyTurn() {
+		gameObject.GetComponent<Renderer>().material.color = Color.green;
+	}
 }
