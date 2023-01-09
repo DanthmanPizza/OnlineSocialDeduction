@@ -12,15 +12,20 @@ public class PlayerScriptAlpha : MonoBehaviour {
 		playerNum = PlayerNumFinder();
     }
 
+    void Update() {
+        if (Input.GetKeyDown("g")) {
+            StartGame();
+        }
+    }
+
 	void StartGame() {
 	    numPlayers = PlayerNumFinder();
 		getInPosition();
 	}
 
 	public void getInPosition() {
-		
-		transform.Rotate(0, playerNum * 360 / numPlayers, 0);
-		transform.Translate(0, 0, 7);
+		transform.Rotate(0, playerNum * 360 / (numPlayers + 1), 0);
+		transform.Translate(0, 0, 100);
 		transform.Rotate(0, 180, 0);
 	}
 

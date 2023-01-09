@@ -6,6 +6,7 @@ public class GameManagerScript : MonoBehaviour {
 
     GameObject[] players;
     int turn;
+    
 
     void Update() {
         if (Input.GetKeyDown("g")) {
@@ -16,6 +17,7 @@ public class GameManagerScript : MonoBehaviour {
     public void StartGame() {
         FindPlayers();
         turn = 0;
+        TurnTime();
     }
 
     public void TurnTime() {
