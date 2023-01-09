@@ -5,6 +5,7 @@ using UnityEngine;
 public class GameManagerScript : MonoBehaviour {
 
     GameObject[] players;
+    int turn;
 
     void Update() {
         if (Input.GetKeyDown("g")) {
@@ -13,13 +14,17 @@ public class GameManagerScript : MonoBehaviour {
     }
 
     public void StartGame() {
-        FindNumPlayers();
-        YourTurn(players[0]);
+        FindPlayers();
+        turn = 0;
     }
 
-    int FindNumPlayers() {
+    public void TurnTime() {
+        YourTurn(players[turn]);
+        turn++;
+    }
+
+    void FindPlayers() {
         players = GameObject.FindGameObjectsWithTag("Player");
-        return players.Length;
     }
 
     void YourTurn(GameObject whoseTurn) {

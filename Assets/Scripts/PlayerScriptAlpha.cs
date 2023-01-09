@@ -12,7 +12,6 @@ public class PlayerScriptAlpha : MonoBehaviour {
 		playerNum = PlayerNumFinder();
     }
 
-	// Update is called once per frame
 	void StartGame() {
 	    numPlayers = PlayerNumFinder();
 		getInPosition();
@@ -31,5 +30,6 @@ public class PlayerScriptAlpha : MonoBehaviour {
 
 	public void MyTurn() {
 		gameObject.GetComponent<Renderer>().material.color = Color.green;
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
 	}
 }
