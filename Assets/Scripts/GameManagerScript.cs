@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameManagerScript : MonoBehaviour {
 
-    GameObject[] players;
-    int turn;
+    public GameObject[] players;
+    public int turn;
     
 
     void Update() {
@@ -21,15 +21,13 @@ public class GameManagerScript : MonoBehaviour {
     }
 
     public void TurnTime() {
-        YourTurn(players[turn]);
-        turn++;
+        if (turn < players.Length) {
+            turn++;
+            players[turn - 1].SendMessage("MyTurn", turn - 1);
+        }
     }
 
     void FindPlayers() {
         players = GameObject.FindGameObjectsWithTag("Player");
-    }
-
-    void YourTurn(GameObject whoseTurn) {
-        whoseTurn.SendMessage("MyTurn");
     }
 }

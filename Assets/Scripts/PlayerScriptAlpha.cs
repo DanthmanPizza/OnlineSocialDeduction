@@ -6,6 +6,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	public GameObject card;
 	public int playerNum;
 	public int numPlayers;
+	public int testThing = 0;
 
     // Start is called before the first frame update
 	void Awake() {
@@ -25,7 +26,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 
 	public void getInPosition() {
 		transform.Rotate(0, playerNum * 360 / (numPlayers + 1), 0);
-		transform.Translate(0, 0, 100);
+		transform.Translate(0, 0, 314);
 		transform.Rotate(0, 180, 0);
 	}
 
@@ -33,8 +34,8 @@ public class PlayerScriptAlpha : MonoBehaviour {
 		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 
-	public void MyTurn() {
-		gameObject.GetComponent<Renderer>().material.color = Color.green;
+	public void MyTurn(int number) {
+		testThing = number;
 		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
 	}
 }

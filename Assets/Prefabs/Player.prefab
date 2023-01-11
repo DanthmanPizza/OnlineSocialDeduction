@@ -119,8 +119,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   card: {fileID: 0}
-  playerNum: 1
-  numPlayers: 5
+  playerNum: 0
+  numPlayers: 0
+  testThing: 0
 --- !u!114 &-9165516408230253131
 MonoBehaviour:
   m_ObjectHideFlags: 0
