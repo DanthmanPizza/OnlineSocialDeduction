@@ -23,7 +23,7 @@ public class GameManagerScript : MonoBehaviour {
     public void TurnTime() {
         if (turn < players.Length) {
             turn++;
-            players[turn - 1].SendMessage("MyTurn", turn - 1);
+            players[turn - 1].SendMessage("MyTurn");
         }
     }
 

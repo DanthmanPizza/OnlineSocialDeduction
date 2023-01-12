@@ -6,7 +6,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	public GameObject card;
 	public int playerNum;
 	public int numPlayers;
-	public int testThing = 0;
+	public Camera myCamera;
 
     // Start is called before the first frame update
 	void Awake() {
@@ -22,6 +22,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	void StartGame() {
 	    numPlayers = PlayerNumFinder();
 		getInPosition();
+		myCamera.enabled = true;
 	}
 
 	public void getInPosition() {
@@ -34,8 +35,11 @@ public class PlayerScriptAlpha : MonoBehaviour {
 		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 
-	public void MyTurn(int number) {
-		testThing = number;
+	public void MyTurn() {
 		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
+	}
+
+	public Camera MyCamera() {
+		return myCamera;
 	}
 }
