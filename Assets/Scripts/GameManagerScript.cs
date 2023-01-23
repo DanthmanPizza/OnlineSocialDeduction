@@ -7,7 +7,6 @@ public class GameManagerScript : MonoBehaviour {
     public GameObject[] players;
     public int turn;
     
-
     void Update() {
         if (Input.GetKeyDown("g")) {
             StartGame();

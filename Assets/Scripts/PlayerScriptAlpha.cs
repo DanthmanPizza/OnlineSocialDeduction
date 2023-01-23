@@ -6,9 +6,9 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	public GameObject card;
 	public int playerNum;
 	public int numPlayers;
-	public Camera myCamera;
 
-    // Start is called before the first frame update
+    	//i am severerly out of my depth
+	// Start is called before the first frame update
 	void Awake() {
 		playerNum = PlayerNumFinder();
     }
@@ -21,11 +21,10 @@ public class PlayerScriptAlpha : MonoBehaviour {
 
 	void StartGame() {
 	    numPlayers = PlayerNumFinder();
-		getInPosition();
-		myCamera.enabled = true;
+		GetInPosition();
 	}
 
-	public void getInPosition() {
+	public void GetInPosition() {
 		transform.Rotate(0, playerNum * 360 / (numPlayers + 1), 0);
 		transform.Translate(0, 0, 314);
 		transform.Rotate(0, 180, 0);
@@ -37,9 +36,5 @@ public class PlayerScriptAlpha : MonoBehaviour {
 
 	public void MyTurn() {
 		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
-	}
-
-	public Camera MyCamera() {
-		return myCamera;
 	}
 }
