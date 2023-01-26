@@ -437,8 +437,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228270c8dc58e1f49a7c310503a817bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  players: []
-  turn: 0
+  cards:
+  - robber
+  - seer
+  - robberseer
 --- !u!1 &507164295
 GameObject:
   m_ObjectHideFlags: 0

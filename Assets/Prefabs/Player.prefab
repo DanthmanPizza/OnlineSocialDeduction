@@ -75,9 +75,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3f3f2e6d0dd5e7848a1a0e2e5c8fd5bc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  card: {fileID: 0}
-  playerNum: 0
-  numPlayers: 0
+  startGameMovement: 314
 --- !u!114 &-9165516408230253131
 MonoBehaviour:
   m_ObjectHideFlags: 0
