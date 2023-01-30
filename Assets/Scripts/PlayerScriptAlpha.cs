@@ -1,11 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerScriptAlpha : MonoBehaviour {
+public class PlayerScriptAlpha : NetworkBehaviour {
 	int playerNum;
 	int numPlayers;
-	string card;
+	public string card;
 	public int startGameMovement;
 
     	//i am severerly out of my depth
@@ -23,6 +24,7 @@ public class PlayerScriptAlpha : MonoBehaviour {
 	void StartGame() {
 	    numPlayers = PlayerNumFinder();
 		GetInPosition();
+		CameraOnOff();
 	}
 
 	public void GetInPosition() {
@@ -52,4 +54,9 @@ public class PlayerScriptAlpha : MonoBehaviour {
 		if (!card.Contains("seer")) return;
 		//Seeing code goes here.
 	}
+	
+	void CameraOnOff() {
+        if (IsLocalPlayer) return;
+        this.GetComponent<Camera>().enabled = false;
+    }
 }

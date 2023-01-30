@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Netcode;
 using UnityEngine;
 
-public class GameManagerScript : MonoBehaviour {
+public class GameManagerScript : NetworkBehaviour {
 
     GameObject[] players;
     int turn;
@@ -16,6 +17,7 @@ public class GameManagerScript : MonoBehaviour {
 
     public void StartGame() {
         FindPlayers();
+        CardTime();
         turn = 0;
         TurnTime();
     }
@@ -34,7 +36,7 @@ public class GameManagerScript : MonoBehaviour {
     void CardTime() {
         Shuffle();
         for (int i = 0; i < players.Length; i++) {
-            players[i].SendMessage("ReciveCard", cards[i]);
+            players[i].SendMessage("RecieveCard", cards[i]);
         }
     }
 

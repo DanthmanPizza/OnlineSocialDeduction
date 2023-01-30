@@ -4,7 +4,7 @@ using Unity.Netcode;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class NetworkManagerUI : MonoBehaviour {
+public class NetworkManagerUI : NetworkBehaviour {
     
     [SerializeField]private Button serverButton;
     [SerializeField]private Button hostButton;
