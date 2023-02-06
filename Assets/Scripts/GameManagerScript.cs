@@ -11,29 +11,34 @@ public class GameManagerScript : NetworkBehaviour {
     
     void Update() {
         if (Input.GetKeyDown("g")) {
-            StartGame();
+            FindPlayers();
+            StartGameClientRpc();
         }
     }
 
-    public void StartGame() {
-        FindPlayers();
-        CardTime();
+    [ClientRpc]
+    public void StartGameClientRpc() {
+        CardTime(players);
         turn = 0;
-        TurnTime();
+        TurnTime(players);
+    }
+
+    public void TurnTime(GameObject[] players) {
+        if (turn < players.Length) {
+            turn++;
+            players[turn - 1].BroadcastMessage("MyTurn");
+        }
     }
 
     public void TurnTime() {
-        if (turn < players.Length) {
-            turn++;
-            players[turn - 1].SendMessage("MyTurn");
-        }
+        TurnTime(players);
     }
 
     void FindPlayers() {
         players = GameObject.FindGameObjectsWithTag("Player");
     }
 
-    void CardTime() {
+    void CardTime(GameObject[] players) {
         Shuffle();
         for (int i = 0; i < players.Length; i++) {
             players[i].SendMessage("RecieveCard", cards[i]);

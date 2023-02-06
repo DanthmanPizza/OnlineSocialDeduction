@@ -38,7 +38,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	public void MyTurn() {
-		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime", GameObject.FindGameObjectsWithTag("Player"));
 	}
 
 	public void RecieveCard(string carb) {
