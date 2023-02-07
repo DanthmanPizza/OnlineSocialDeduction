@@ -5,41 +5,37 @@ using UnityEngine;
 
 public class GameManagerScript : NetworkBehaviour {
 
-    GameObject[] players;
     int turn;
     public string[] cards;
-    
+
     void Update() {
         if (Input.GetKeyDown("g")) {
-            FindPlayers();
             StartGameClientRpc();
         }
     }
 
     [ClientRpc]
     public void StartGameClientRpc() {
-        CardTime(players);
+        CardTime();
         turn = 0;
-        TurnTime(players);
+        TurnTime();
     }
 
-    public void TurnTime(GameObject[] players) {
+    public void TurnTime() {
+        GameObject[] players = FindPlayers();
         if (turn < players.Length) {
             turn++;
             players[turn - 1].BroadcastMessage("MyTurn");
         }
     }
 
-    public void TurnTime() {
-        TurnTime(players);
+    GameObject[] FindPlayers() {
+        return GameObject.FindGameObjectsWithTag("Player");
     }
 
-    void FindPlayers() {
-        players = GameObject.FindGameObjectsWithTag("Player");
-    }
-
-    void CardTime(GameObject[] players) {
+    void CardTime() {
         Shuffle();
+        GameObject[] players = FindPlayers();
         for (int i = 0; i < players.Length; i++) {
             players[i].SendMessage("RecieveCard", cards[i]);
         }

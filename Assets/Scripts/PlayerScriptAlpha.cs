@@ -38,7 +38,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	public void MyTurn() {
-		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime", GameObject.FindGameObjectsWithTag("Player"));
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
 	}
 
 	public void RecieveCard(string carb) {
@@ -54,7 +54,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (!card.Contains("seer")) return;
 		//Seeing code goes here.
 	}
-	
+
 	void CameraOnOff() {
         if (IsLocalPlayer) return;
         this.GetComponent<Camera>().enabled = false;
