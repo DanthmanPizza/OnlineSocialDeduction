@@ -5,18 +5,19 @@ using UnityEngine;
 
 public class GameManagerScript : NetworkBehaviour {
 
-    int turn;
+    public int turn;
     public string[] cards;
 
     void Update() {
         if (Input.GetKeyDown("g")) {
-            StartGameClientRpc();
+            Shuffle();
+            StartGameClientRpc(ArrToString(cards));
         }
     }
 
     [ClientRpc]
-    public void StartGameClientRpc() {
-        CardTime();
+    public void StartGameClientRpc(string caards) {
+        CardTime(caards);
         turn = 0;
         TurnTime();
     }
@@ -33,11 +34,11 @@ public class GameManagerScript : NetworkBehaviour {
         return GameObject.FindGameObjectsWithTag("Player");
     }
 
-    void CardTime() {
-        Shuffle();
+    void CardTime(string kards) {
+        string[] carbd = kards.Split(" ");
         GameObject[] players = FindPlayers();
         for (int i = 0; i < players.Length; i++) {
-            players[i].SendMessage("RecieveCard", cards[i]);
+            players[i].SendMessage("RecieveCard", carbd[i]);
         }
     }
 
@@ -49,5 +50,13 @@ public class GameManagerScript : NetworkBehaviour {
             cards[rand] = cards[i];
             cards[i] = temp;
         }
+    }
+
+    string ArrToString(string[] str) {
+        string store = "";
+        foreach (string i in str) {
+            store += i + " ";
+        }
+        return store;
     }
 }

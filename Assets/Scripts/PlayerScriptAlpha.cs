@@ -24,7 +24,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	void StartGame() {
 	    numPlayers = PlayerNumFinder();
 		GetInPosition();
-		CameraOnOff();
+		CameraOnOffClientRpc();
 	}
 
 	public void GetInPosition() {
@@ -55,8 +55,21 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		//Seeing code goes here.
 	}
 
-	void CameraOnOff() {
+	[ClientRpc]
+	void CameraOnOffClientRpc() {
         if (IsLocalPlayer) return;
         this.GetComponent<Camera>().enabled = false;
     }
+
+	void OnMouseDown() {
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (IsLocalPlayer) {
+				SendMessage("Pressed");
+			}
+		}
+	}
+
+	void Pressed() {
+		GetComponent<Renderer>().material.color = Color.blue;
+	}
 }
