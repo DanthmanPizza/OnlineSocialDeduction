@@ -26,7 +26,7 @@ public class GameManagerScript : NetworkBehaviour {
         GameObject[] players = FindPlayers();
         if (turn < players.Length) {
             turn++;
-            players[turn - 1].BroadcastMessage("MyTurn");
+            players[turn - 1].BroadcastMessage("MyTurn", false);
         }
     }
 

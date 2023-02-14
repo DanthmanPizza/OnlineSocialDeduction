@@ -8,21 +8,22 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	int numPlayers;
 	public string card;
 	public int startGameMovement;
+	bool myTurn = false;
 
-    	//i am severerly out of my depth
+		//i am severerly out of my depth
 	// Start is called before the first frame update
 	void Awake() {
 		playerNum = PlayerNumFinder();
-    }
+	}
 
-    void Update() {
-        if (Input.GetKeyDown("g")) {
-            StartGame();
-        }
-    }
+	void Update() {
+		if (Input.GetKeyDown("g")) {
+			StartGame();
+		}
+	}
 
 	void StartGame() {
-	    numPlayers = PlayerNumFinder();
+		numPlayers = PlayerNumFinder();
 		GetInPosition();
 		CameraOnOffClientRpc();
 	}
@@ -37,8 +38,14 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 
-	public void MyTurn() {
-		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
+	public void MyTurn(bool turnOver) {
+		if (!turnOver) {
+			myTurn = true;
+		}
+		else {
+			myTurn = false;
+			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
+		}
 	}
 
 	public void RecieveCard(string carb) {
@@ -57,19 +64,21 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 
 	[ClientRpc]
 	void CameraOnOffClientRpc() {
-        if (IsLocalPlayer) return;
-        this.GetComponent<Camera>().enabled = false;
-    }
+		if (IsLocalPlayer) return;
+		this.GetComponent<Camera>().enabled = false;
+	}
 
 	void OnMouseDown() {
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
-			if (IsLocalPlayer) {
-				SendMessage("Pressed");
-			}
+			pla.SendMessage("Pressed", playerNum);
 		}
 	}
 
-	void Pressed() {
-		GetComponent<Renderer>().material.color = Color.blue;
+	void Pressed(int plaNum) {
+		if (!IsLocalPlayer) return;
+		if (myTurn) {
+			MyTurn(true);
+		}
 	}
+
 }
