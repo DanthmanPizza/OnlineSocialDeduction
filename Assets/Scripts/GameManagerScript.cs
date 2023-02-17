@@ -19,14 +19,15 @@ public class GameManagerScript : NetworkBehaviour {
     public void StartGameClientRpc(string caards) {
         CardTime(caards);
         turn = 0;
-        TurnTime();
+        TurnTimeClientRpc();
     }
 
-    public void TurnTime() {
+    [ClientRpc]
+    public void TurnTimeClientRpc() {
         GameObject[] players = FindPlayers();
         if (turn < players.Length) {
             turn++;
-            players[turn - 1].BroadcastMessage("MyTurn", false);
+            players[turn - 1].BroadcastMessage("MyTurnClientRpc", false);
         }
     }
 

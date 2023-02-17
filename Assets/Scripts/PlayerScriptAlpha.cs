@@ -8,7 +8,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	int numPlayers;
 	public string card;
 	public int startGameMovement;
-	bool myTurn = false;
+	public bool myTurn = false;
 	public string seenCard;
 
 		//i am severerly out of my depth
@@ -38,10 +38,11 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 
-	public void MyTurn(bool turnOver) {
+	[ClientRpc]
+	public void MyTurnClientRpc(bool turnOver) {
 		myTurn = !myTurn;
 		if (turnOver) {
-			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
+			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
 		}
 	}
 
@@ -78,7 +79,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	void Pressed(int plaNum) {
 		if (!IsLocalPlayer) return;
 		if (myTurn) {
-			MyTurn(true);
+			MyTurnClientRpc(true);
 		}
 	}
 
