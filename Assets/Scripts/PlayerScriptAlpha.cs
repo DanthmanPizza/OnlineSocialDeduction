@@ -9,9 +9,9 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public string card;
 	public int startGameMovement;
 	bool myTurn = false;
+	public string seenCard;
 
 		//i am severerly out of my depth
-	// Start is called before the first frame update
 	void Awake() {
 		playerNum = PlayerNumFinder();
 	}
@@ -39,11 +39,8 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	public void MyTurn(bool turnOver) {
-		if (!turnOver) {
-			myTurn = true;
-		}
-		else {
-			myTurn = false;
+		myTurn = !myTurn;
+		if (turnOver) {
 			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTime");
 		}
 	}
@@ -57,9 +54,13 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		//Robbing code goes here.
 	}
 
-	public void Seer() {
+	public void Seer(int selectedPlayer) {
 		if (!card.Contains("seer")) return;
-		//Seeing code goes here.
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (selectedPlayer == ExtractPlayerNumber(pla)) {
+				seenCard = pla.GetComponent<PlayerScriptAlpha>().card;
+			}
+		}
 	}
 
 	[ClientRpc]
@@ -81,4 +82,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		}
 	}
 
+	int ExtractPlayerNumber(GameObject ploe) {
+		return ploe.GetComponent<PlayerScriptAlpha>().playerNum;
+	}
 }
