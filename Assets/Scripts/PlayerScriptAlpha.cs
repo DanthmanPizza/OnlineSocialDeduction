@@ -40,9 +40,12 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 
 	[ClientRpc]
 	public void MyTurnClientRpc(bool turnOver) {
-		myTurn = !myTurn;
-		if (turnOver) {
-			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
+		if (!turnOver || myTurn) {
+			Debug.Log("Turn Recieved");
+			myTurn = !myTurn;
+			if (turnOver) {
+				GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
+			}
 		}
 	}
 
@@ -79,11 +82,23 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	void Pressed(int plaNum) {
 		if (!IsLocalPlayer) return;
 		if (myTurn) {
-			MyTurnClientRpc(true);
+			Debug.Log("Turn Sent");
+			Seer(plaNum);
+			if (!IsHost && !IsServer) {
+				ClientTurnServerRpc();
+			}
+			else {
+				MyTurnClientRpc(true);
+			}
 		}
 	}
 
 	int ExtractPlayerNumber(GameObject ploe) {
 		return ploe.GetComponent<PlayerScriptAlpha>().playerNum;
+	}
+
+	[ServerRpc]
+	void ClientTurnServerRpc() {
+		MyTurnClientRpc(true);
 	}
 }
