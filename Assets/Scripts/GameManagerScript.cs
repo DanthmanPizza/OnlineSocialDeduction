@@ -7,6 +7,7 @@ public class GameManagerScript : NetworkBehaviour {
 
     public int turn;
     public string[] cards;
+    public string[] orderOfOperations = {"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac"};
 
     void Update() {
         if (Input.GetKeyDown("g")) {
@@ -27,7 +28,9 @@ public class GameManagerScript : NetworkBehaviour {
         GameObject[] players = FindPlayers();
         if (turn < players.Length) {
             turn++;
-            players[turn - 1].BroadcastMessage("MyTurnClientRpc", false);
+            foreach (GameObject player in players) {
+                player.SendMessage("TurnTime", orderOfOperations[turn - 1]);
+            }
         }
     }
 

@@ -6,6 +6,7 @@ using UnityEngine;
 public class PlayerScriptAlpha : NetworkBehaviour {
 	int playerNum;
 	int numPlayers;
+	public string originalCard = "";
 	public string card;
 	public int startGameMovement;
 	public bool myTurn = false;
@@ -41,7 +42,6 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	[ClientRpc]
 	public void MyTurnClientRpc(bool turnOver) {
 		if (!turnOver || myTurn) {
-			Debug.Log("Turn Recieved");
 			myTurn = !myTurn;
 			if (turnOver) {
 				GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
@@ -49,22 +49,25 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		}
 	}
 
-	public void RecieveCard(string carb) {
-		card = carb;
+	public void MyTurn() {
+		
 	}
 
-	public void Robber() {
-		if (!card.Contains("robber")) return;
-		//Robbing code goes here.
+	public void RecieveCard(string carb) {
+		card = carb;
+		if (originalCard == "") originalCard = carb;
+	}
+
+	public void Robber(int selectedPlayer) {
+		if (!originalCard.Contains("robber")) return;
+		string myNewCard = ViewCard(selectedPlayer);
+			ChangingCardServerRpc(card, selectedPlayer);
+			ChangingCardServerRpc(myNewCard, playerNum);
 	}
 
 	public void Seer(int selectedPlayer) {
-		if (!card.Contains("seer")) return;
-		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
-			if (selectedPlayer == ExtractPlayerNumber(pla)) {
-				seenCard = pla.GetComponent<PlayerScriptAlpha>().card;
-			}
-		}
+		if (!originalCard.Contains("seer")) return;
+		seenCard = ViewCard(selectedPlayer);
 	}
 
 	[ClientRpc]
@@ -82,14 +85,9 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	void Pressed(int plaNum) {
 		if (!IsLocalPlayer) return;
 		if (myTurn) {
-			Debug.Log("Turn Sent");
 			Seer(plaNum);
-			if (!IsHost && !IsServer) {
-				ClientTurnServerRpc();
-			}
-			else {
-				MyTurnClientRpc(true);
-			}
+			Robber(plaNum);
+				ClientTurnServerRpc(true);
 		}
 	}
 
@@ -98,7 +96,30 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	[ServerRpc]
-	void ClientTurnServerRpc() {
+	void ClientTurnServerRpc(bool turnYN) {
 		MyTurnClientRpc(true);
+	}
+
+	string ViewCard(int chosenPlayer) {
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (chosenPlayer == ExtractPlayerNumber(pla)) {
+				return pla.GetComponent<PlayerScriptAlpha>().card;
+			}
+		}
+		return "error";
+	}
+
+	[ServerRpc]
+	void ChangingCardServerRpc(string newCard, int plaNom) {
+		ChangingCardClientRpc(newCard, plaNom);
+	}
+
+	[ClientRpc]
+	void ChangingCardClientRpc(string newCard, int palNumbre) {
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (palNumbre == ExtractPlayerNumber(pla)) {
+				pla.GetComponent<PlayerScriptAlpha>().card = newCard;
+			}
+		}
 	}
 }
