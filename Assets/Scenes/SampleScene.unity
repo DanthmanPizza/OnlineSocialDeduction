@@ -438,10 +438,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 228270c8dc58e1f49a7c310503a817bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  turn: 0
   cards:
-  - robber
-  - seer
-  - robberseer
+  - Robber
+  - Seer
+  - RobberSeer
+  orderOfOperations:
+  - Doppelganger
+  - Werewolf
+  - Minion
+  - Mason
+  - Seer
+  - Robber
+  - Troublemaker
+  - Drunk
+  - Insomniac
 --- !u!114 &486193295
 MonoBehaviour:
   m_ObjectHideFlags: 0

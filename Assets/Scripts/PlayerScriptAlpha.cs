@@ -11,6 +11,8 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public int startGameMovement;
 	public bool myTurn = false;
 	public string seenCard;
+	public string currentCard;
+
 
 		//i am severerly out of my depth
 	void Awake() {
@@ -40,17 +42,13 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	[ClientRpc]
-	public void MyTurnClientRpc(bool turnOver) {
-		if (!turnOver || myTurn) {
-			myTurn = !myTurn;
-			if (turnOver) {
-				GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
-			}
+	public void MyTurnClientRpc(string whatsOccuring) {
+		myTurn = true;
+		currentCard = whatsOccuring;
+		if (!originalCard.Contains(whatsOccuring)) {
+			myTurn = false;
+			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOver");
 		}
-	}
-
-	public void MyTurn() {
-		
 	}
 
 	public void RecieveCard(string carb) {
@@ -59,14 +57,14 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	public void Robber(int selectedPlayer) {
-		if (!originalCard.Contains("robber")) return;
+		if (!originalCard.Contains("Robber") || currentCard != "Robber") return;
 		string myNewCard = ViewCard(selectedPlayer);
-			ChangingCardServerRpc(card, selectedPlayer);
-			ChangingCardServerRpc(myNewCard, playerNum);
+		ChangingCardServerRpc(card, selectedPlayer);
+		ChangingCardServerRpc(myNewCard, playerNum);
 	}
 
 	public void Seer(int selectedPlayer) {
-		if (!originalCard.Contains("seer")) return;
+		if (!originalCard.Contains("Seer") || currentCard != "Seer") return;
 		seenCard = ViewCard(selectedPlayer);
 	}
 
@@ -87,17 +85,11 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (myTurn) {
 			Seer(plaNum);
 			Robber(plaNum);
-				ClientTurnServerRpc(true);
 		}
 	}
 
 	int ExtractPlayerNumber(GameObject ploe) {
 		return ploe.GetComponent<PlayerScriptAlpha>().playerNum;
-	}
-
-	[ServerRpc]
-	void ClientTurnServerRpc(bool turnYN) {
-		MyTurnClientRpc(true);
 	}
 
 	string ViewCard(int chosenPlayer) {
@@ -122,4 +114,21 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 			}
 		}
 	}
+
+	/* preserved for posterity
+	[ClientRpc]
+	public void MyTurnClientRpc(bool turnOver) {
+		if (!turnOver || myTurn) {
+			myTurn = !myTurn;
+			if (turnOver) {
+				GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
+			}
+		}
+	}
+
+	[ServerRpc]
+	void ClientTurnServerRpc(bool turnYN) {
+		MyTurnClientRpc(true);
+	}
+	*/
 }

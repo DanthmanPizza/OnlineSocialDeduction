@@ -6,6 +6,7 @@ using UnityEngine;
 public class GameManagerScript : NetworkBehaviour {
 
     public int turn;
+    public int playersDoneCounter;
     public string[] cards;
     public string[] orderOfOperations = {"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac"};
 
@@ -26,10 +27,10 @@ public class GameManagerScript : NetworkBehaviour {
     [ClientRpc]
     public void TurnTimeClientRpc() {
         GameObject[] players = FindPlayers();
-        if (turn < players.Length) {
+        if (turn < orderOfOperations.Length) {
             turn++;
             foreach (GameObject player in players) {
-                player.SendMessage("TurnTime", orderOfOperations[turn - 1]);
+                player.SendMessage("MyTurnClientRpc", orderOfOperations[turn - 1]);
             }
         }
     }
@@ -62,5 +63,13 @@ public class GameManagerScript : NetworkBehaviour {
             store += i + " ";
         }
         return store;
+    }
+
+    public void TurnOver() {
+        playersDoneCounter++;
+        if (playersDoneCounter >= FindPlayers().Length) {
+            playersDoneCounter = 0;
+            TurnTimeClientRpc();
+        }
     }
 }
