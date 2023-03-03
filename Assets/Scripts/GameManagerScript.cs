@@ -65,7 +65,9 @@ public class GameManagerScript : NetworkBehaviour {
         return store;
     }
 
-    public void TurnOver() {
+    [ClientRpc]
+    public void TurnOverClientRpc() {
+        Debug.Log("loud and clear" + playersDoneCounter);
         playersDoneCounter++;
         if (playersDoneCounter >= FindPlayers().Length) {
             playersDoneCounter = 0;

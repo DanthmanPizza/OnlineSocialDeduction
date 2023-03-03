@@ -47,7 +47,8 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		currentCard = whatsOccuring;
 		if (!originalCard.Contains(whatsOccuring)) {
 			myTurn = false;
-			GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOver");
+			Debug.Log("Telling the Manager" + playerNum);
+			TellTheManagerServerRpc("TurnOverClientRpc");
 		}
 	}
 
@@ -85,6 +86,9 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (myTurn) {
 			Seer(plaNum);
 			Robber(plaNum);
+			TurnToggleClientRpc();
+			Debug.Log("Telling the Manager" + plaNum);
+			TellTheManagerServerRpc("TurnOverClientRpc");
 		}
 	}
 
@@ -113,6 +117,16 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 				pla.GetComponent<PlayerScriptAlpha>().card = newCard;
 			}
 		}
+	}
+
+	[ClientRpc]
+	void TurnToggleClientRpc() {
+		myTurn = !myTurn;
+	}
+
+	[ServerRpc(RequireOwnership = false)]
+	public void TellTheManagerServerRpc(string whatToSay) {
+		GameObject.FindGameObjectWithTag("Manager").SendMessage(whatToSay);
 	}
 
 	/* preserved for posterity
