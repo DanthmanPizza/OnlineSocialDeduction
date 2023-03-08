@@ -41,14 +41,11 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		return GameObject.FindGameObjectsWithTag("Player").Length - 1;
 	}
 
-	[ClientRpc]
-	public void MyTurnClientRpc(string whatsOccuring) {
+	public void MyTurn(string whatsOccuring) {
 		myTurn = true;
 		currentCard = whatsOccuring;
 		if (!originalCard.Contains(whatsOccuring)) {
-			myTurn = false;
-			Debug.Log("Telling the Manager" + playerNum);
-			TellTheManagerServerRpc("TurnOverClientRpc");
+			if (IsOwner) TurnThingsServerRpc();
 		}
 	}
 
@@ -86,9 +83,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (myTurn) {
 			Seer(plaNum);
 			Robber(plaNum);
-			TurnToggleClientRpc();
-			Debug.Log("Telling the Manager" + plaNum);
-			TellTheManagerServerRpc("TurnOverClientRpc");
+			if (IsOwner) TurnThingsServerRpc();
 		}
 	}
 
@@ -119,14 +114,20 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		}
 	}
 
-	[ClientRpc]
-	void TurnToggleClientRpc() {
+	void TurnToggle() {
 		myTurn = !myTurn;
 	}
 
-	[ServerRpc(RequireOwnership = false)]
-	public void TellTheManagerServerRpc(string whatToSay) {
-		GameObject.FindGameObjectWithTag("Manager").SendMessage(whatToSay);
+	[ServerRpc]
+	public void TurnThingsServerRpc() {
+		TurnThingsClientRpc();
+	}
+
+	[ClientRpc]
+	public void TurnThingsClientRpc() {
+		TurnToggle();
+		Debug.Log("Telling the Manager" + playerNum);
+		if (IsOwner) GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
 	}
 
 	/* preserved for posterity

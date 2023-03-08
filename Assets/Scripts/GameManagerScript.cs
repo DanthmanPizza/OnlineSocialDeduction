@@ -26,11 +26,12 @@ public class GameManagerScript : NetworkBehaviour {
 
     [ClientRpc]
     public void TurnTimeClientRpc() {
+        Debug.Log("hello sir");
         GameObject[] players = FindPlayers();
         if (turn < orderOfOperations.Length) {
             turn++;
             foreach (GameObject player in players) {
-                player.SendMessage("MyTurnClientRpc", orderOfOperations[turn - 1]);
+                player.SendMessage("MyTurn", orderOfOperations[turn - 1]);
             }
         }
     }
@@ -65,10 +66,15 @@ public class GameManagerScript : NetworkBehaviour {
         return store;
     }
 
+    [ServerRpc]
+    public void TurnOverServerRpc() {
+        TurnOverClientRpc();
+    }
+
     [ClientRpc]
     public void TurnOverClientRpc() {
-        Debug.Log("loud and clear" + playersDoneCounter);
         playersDoneCounter++;
+        Debug.Log("loud and clear" + playersDoneCounter);
         if (playersDoneCounter >= FindPlayers().Length) {
             playersDoneCounter = 0;
             TurnTimeClientRpc();
