@@ -26,7 +26,6 @@ public class GameManagerScript : NetworkBehaviour {
 
     [ClientRpc]
     public void TurnTimeClientRpc() {
-        Debug.Log("hello sir");
         GameObject[] players = FindPlayers();
         if (turn < orderOfOperations.Length) {
             turn++;
@@ -74,7 +73,6 @@ public class GameManagerScript : NetworkBehaviour {
     [ClientRpc]
     public void TurnOverClientRpc() {
         playersDoneCounter++;
-        Debug.Log("loud and clear" + playersDoneCounter);
         if (playersDoneCounter >= FindPlayers().Length) {
             playersDoneCounter = 0;
             TurnTimeClientRpc();

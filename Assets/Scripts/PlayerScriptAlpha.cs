@@ -126,8 +126,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	[ClientRpc]
 	public void TurnThingsClientRpc() {
 		TurnToggle();
-		Debug.Log("Telling the Manager" + playerNum);
-		if (IsOwner) GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
 	}
 
 	/* preserved for posterity
