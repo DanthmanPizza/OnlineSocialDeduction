@@ -126,24 +126,6 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	[ClientRpc]
 	public void TurnThingsClientRpc() {
 		TurnToggle();
-		Debug.Log("Telling the Manager" + playerNum);
-		if (IsOwner) GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
 	}
-
-	/* preserved for posterity
-	[ClientRpc]
-	public void MyTurnClientRpc(bool turnOver) {
-		if (!turnOver || myTurn) {
-			myTurn = !myTurn;
-			if (turnOver) {
-				GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnTimeClientRpc");
-			}
-		}
-	}
-
-	[ServerRpc]
-	void ClientTurnServerRpc(bool turnYN) {
-		MyTurnClientRpc(true);
-	}
-	*/
 }
