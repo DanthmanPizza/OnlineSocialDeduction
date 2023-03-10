@@ -66,6 +66,11 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		seenCard = ViewCard(selectedPlayer);
 	}
 
+	public void Voting(int selectedPlayer) {
+		if (currentCard != "Voting") return;
+		
+	}
+
 	[ClientRpc]
 	void CameraOnOffClientRpc() {
 		if (IsLocalPlayer) return;
@@ -83,6 +88,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (myTurn) {
 			Seer(plaNum);
 			Robber(plaNum);
+			Voting(plaNum);
 			if (IsOwner) TurnThingsServerRpc();
 		}
 	}

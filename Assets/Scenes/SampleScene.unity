@@ -439,6 +439,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   turn: 0
+  playersDoneCounter: 0
   cards:
   - Robber
   - Seer
@@ -453,6 +454,7 @@ MonoBehaviour:
   - Troublemaker
   - Drunk
   - Insomniac
+  - Voting
 --- !u!114 &486193295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1250,7 +1252,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   RunInBackground: 1
-  LogLevel: 0
+  LogLevel: 1
   NetworkConfig:
     ProtocolVersion: 0
     NetworkTransport: {fileID: 2135453415}
