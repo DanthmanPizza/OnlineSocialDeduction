@@ -440,10 +440,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   turn: 0
   playersDoneCounter: 0
+  votes: 
   cards:
   - Robber
   - Seer
   - RobberSeer
+  - Mason
   orderOfOperations:
   - Doppelganger
   - Werewolf

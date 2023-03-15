@@ -7,6 +7,7 @@ public class GameManagerScript : NetworkBehaviour {
 
     public int turn;
     public int playersDoneCounter;
+    public int[] votes;
     public string[] cards;
     public string[] orderOfOperations = {"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Voting"};
 
@@ -19,6 +20,7 @@ public class GameManagerScript : NetworkBehaviour {
 
     [ClientRpc]
     public void StartGameClientRpc(string caards) {
+        votes = new int[FindPlayers().Length];
         CardTime(caards);
         turn = 0;
         TurnTimeClientRpc();
@@ -65,6 +67,22 @@ public class GameManagerScript : NetworkBehaviour {
         return store;
     }
 
+    int FindIndexOfLargestInArray(int[] arr) {
+        int currentLargest = 0;
+        int currentLargestLocation = 0;
+        bool tie = false;
+        for (int i = 0; i < arr.Length; i++) {
+            if (arr[i] == currentLargest) tie = true;
+            if (arr[i] > currentLargest) {
+                currentLargest = arr[i];
+                currentLargestLocation = i;
+                tie = false;
+            }
+        }
+        if (!tie) return currentLargestLocation;
+        return -1;
+    }
+
     [ServerRpc]
     public void TurnOverServerRpc() {
         TurnOverClientRpc();
@@ -76,6 +94,19 @@ public class GameManagerScript : NetworkBehaviour {
         if (playersDoneCounter >= FindPlayers().Length) {
             playersDoneCounter = 0;
             TurnTimeClientRpc();
+        }
+    }
+
+    [ServerRpc]
+    void VoteServerRpc(int choosedPlayer) {
+        VoteClientRpc(choosedPlayer);
+    }
+
+    [ClientRpc]
+    void VoteClientRpc(int chosenPlayer) {
+        votes[chosenPlayer]++;
+        if (playersDoneCounter >= FindPlayers().Length  - 1 && FindIndexOfLargestInArray(votes) > -1) {
+            FindPlayers()[FindIndexOfLargestInArray(votes)].SendMessage("Murdered");
         }
     }
 }

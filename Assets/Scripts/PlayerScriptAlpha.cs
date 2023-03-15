@@ -12,6 +12,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public bool myTurn = false;
 	public string seenCard;
 	public string currentCard;
+	public bool alive = true;
 
 
 		//i am severerly out of my depth
@@ -26,6 +27,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	void StartGame() {
+		alive = true;
 		numPlayers = PlayerNumFinder();
 		GetInPosition();
 		CameraOnOffClientRpc();
@@ -44,9 +46,10 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public void MyTurn(string whatsOccuring) {
 		myTurn = true;
 		currentCard = whatsOccuring;
-		if (!originalCard.Contains(whatsOccuring)) {
+		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting") {
 			if (IsOwner) TurnThingsServerRpc();
 		}
+		Mason();
 	}
 
 	public void RecieveCard(string carb) {
@@ -66,9 +69,14 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		seenCard = ViewCard(selectedPlayer);
 	}
 
+	void Mason() {
+		if (!originalCard.Contains("Mason") || currentCard != "Mason") return;
+		Debug.Log("Mason");
+	}
+
 	public void Voting(int selectedPlayer) {
 		if (currentCard != "Voting") return;
-		
+		RegisterVoteServerRpc(selectedPlayer);
 	}
 
 	[ClientRpc]
@@ -124,14 +132,23 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		myTurn = !myTurn;
 	}
 
+	public void Murdered() {
+		alive = false;
+	}
+
 	[ServerRpc]
 	public void TurnThingsServerRpc() {
 		TurnThingsClientRpc();
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
 	}
 
 	[ClientRpc]
 	public void TurnThingsClientRpc() {
 		TurnToggle();
-		GameObject.FindGameObjectWithTag("Manager").SendMessage("TurnOverServerRpc");
+	}
+
+	[ServerRpc]
+	void RegisterVoteServerRpc(int chosenPlayer) {
+		GameObject.FindGameObjectWithTag("Manager").SendMessage("VoteServerRpc", chosenPlayer);
 	}
 }
