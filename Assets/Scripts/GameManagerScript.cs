@@ -47,6 +47,10 @@ public class GameManagerScript : NetworkBehaviour {
         for (int i = 0; i < players.Length; i++) {
             players[i].SendMessage("RecieveCard", carbd[i]);
         }
+        GameObject[] middle = GameObject.FindGameObjectsWithTag("Middle");
+        for (int j = 0; j < middle.Length; j++) {
+            middle[j].SendMessage("RecieveCard", carbd[j]);
+        }
     }
 
     void Shuffle() {
