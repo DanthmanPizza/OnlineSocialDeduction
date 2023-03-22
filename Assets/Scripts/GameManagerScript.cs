@@ -49,7 +49,7 @@ public class GameManagerScript : NetworkBehaviour {
         }
         GameObject[] middle = GameObject.FindGameObjectsWithTag("Middle");
         for (int j = 0; j < middle.Length; j++) {
-            middle[j].SendMessage("RecieveCard", carbd[j]);
+            middle[j].SendMessage("RecieveCard", carbd[j + players.Length]);
         }
     }
 

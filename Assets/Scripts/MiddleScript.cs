@@ -20,8 +20,8 @@ public class MiddleScript : NetworkBehaviour {
 
 	void OnMouseDown() {
         //I will need different code here to accomodate the functions of cards
-		/*foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			pla.SendMessage("Pressed", myNumber + PlayerNumFinder());
-		}*/
+		}
 	}
 }

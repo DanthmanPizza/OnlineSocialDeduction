@@ -520,7 +520,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 834413eade5ad5642b7814ed1f8e3236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myNumber: 0
+  card: 
+  originalCard: 
+  myNumber: 1
 --- !u!1 &478350866
 GameObject:
   m_ObjectHideFlags: 0
@@ -648,7 +650,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 834413eade5ad5642b7814ed1f8e3236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myNumber: 2
+  card: 
+  originalCard: 
+  myNumber: 3
 --- !u!1 &486193292
 GameObject:
   m_ObjectHideFlags: 0
@@ -701,11 +705,8 @@ MonoBehaviour:
   - Robber
   - Seer
   - RobberSeer
-  - Mason
-  - Mason
-  - Villager
-  - Villager
-  - Villager
+  - Seer
+  - Seer
   orderOfOperations:
   - Doppelganger
   - Werewolf
@@ -1031,7 +1032,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 834413eade5ad5642b7814ed1f8e3236, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  myNumber: 1
+  card: 
+  originalCard: 
+  myNumber: 2
 --- !u!1 &805946293
 GameObject:
   m_ObjectHideFlags: 0

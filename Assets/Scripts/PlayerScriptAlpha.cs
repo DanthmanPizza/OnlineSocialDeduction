@@ -11,8 +11,11 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public int startGameMovement;
 	public bool myTurn = false;
 	public string seenCard;
+	public string seenCardTwo;
 	public string currentCard;
 	public bool alive = true;
+	bool sawMiddle = false;
+	bool youNeedAnotherTry = false;
 
 
 		//i am severerly out of my depth
@@ -49,7 +52,6 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting") {
 			if (IsOwner) TurnThingsServerRpc();
 		}
-		Mason();
 	}
 
 	public void RecieveCard(string carb) {
@@ -66,12 +68,27 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 
 	public void Seer(int selectedPlayer) {
 		if (!originalCard.Contains("Seer") || currentCard != "Seer") return;
+		if (sawMiddle) {
+			sawMiddle = false;
+			if (selectedPlayer <= numPlayers) {
+				youNeedAnotherTry = true;
+				return;
+			}
+			seenCardTwo = ViewCard(selectedPlayer);
+			return;
+		}
+		if (selectedPlayer > numPlayers) {
+			sawMiddle = true;
+			youNeedAnotherTry = true;
+		}
 		seenCard = ViewCard(selectedPlayer);
 	}
 
-	void Mason() {
+	void Mason(int selectedPlayer) {
 		if (!originalCard.Contains("Mason") || currentCard != "Mason") return;
-		Debug.Log("Mason");
+		if (!ViewCard(selectedPlayer).Contains("Mason") && SearchForCard("Mason") > 1) {
+			youNeedAnotherTry = true;
+		}
 	}
 
 	public void Voting(int selectedPlayer) {
@@ -92,13 +109,19 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	void Pressed(int plaNum) {
-		if (!IsLocalPlayer) return;
-		if (myTurn) {
-			Seer(plaNum);
+		if (!IsLocalPlayer || !myTurn) return;
+		Seer(plaNum);
+		if (plaNum <= numPlayers) {
+			Mason(plaNum);
 			Robber(plaNum);
 			Voting(plaNum);
-			if (IsOwner) TurnThingsServerRpc();
 		}
+		if (!CheckIfMiddleCard(currentCard) && plaNum > numPlayers) youNeedAnotherTry = true;
+		if (youNeedAnotherTry) {
+			youNeedAnotherTry = false;
+			return;
+		}
+		TurnThingsServerRpc();
 	}
 
 	int ExtractPlayerNumber(GameObject ploe) {
@@ -106,12 +129,29 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	string ViewCard(int chosenPlayer) {
-		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
-			if (chosenPlayer == ExtractPlayerNumber(pla)) {
-				return pla.GetComponent<PlayerScriptAlpha>().card;
+		if (chosenPlayer > numPlayers) {
+			foreach (GameObject mid in GameObject.FindGameObjectsWithTag("Middle")) {
+				if (chosenPlayer - numPlayers == mid.GetComponent<MiddleScript>().myNumber) {
+					return mid.GetComponent<MiddleScript>().card;
+				}
+			}
+		}
+		else {
+			foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+				if (chosenPlayer == ExtractPlayerNumber(pla)) {
+					return pla.GetComponent<PlayerScriptAlpha>().card;
+				}
 			}
 		}
 		return "error";
+	}
+
+	int SearchForCard(string searchCard) {
+		int i = 0;
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (pla.GetComponent<PlayerScriptAlpha>().card.Contains(searchCard)) i++;
+		}
+		return i;
 	}
 
 	[ServerRpc]
@@ -134,6 +174,11 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 
 	public void Murdered() {
 		alive = false;
+	}
+
+	bool CheckIfMiddleCard(string card) {
+		if (card.Contains("Seer") || card.Contains("Werewolf")) return true;
+		return false;
 	}
 
 	[ServerRpc]
