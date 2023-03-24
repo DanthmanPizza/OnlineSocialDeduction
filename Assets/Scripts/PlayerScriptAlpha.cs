@@ -49,6 +49,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public void MyTurn(string whatsOccuring) {
 		myTurn = true;
 		currentCard = whatsOccuring;
+		Drunk();
 		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting") {
 			if (IsOwner) TurnThingsServerRpc();
 		}
@@ -70,23 +71,51 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (!originalCard.Contains("Seer") || currentCard != "Seer") return;
 		if (sawMiddle) {
 			sawMiddle = false;
-			if (selectedPlayer <= numPlayers) {
+			if (selectedPlayer <= PlayerNumFinder()) {
 				youNeedAnotherTry = true;
 				return;
 			}
 			seenCardTwo = ViewCard(selectedPlayer);
 			return;
 		}
-		if (selectedPlayer > numPlayers) {
+		if (selectedPlayer > PlayerNumFinder()) {
 			sawMiddle = true;
 			youNeedAnotherTry = true;
 		}
 		seenCard = ViewCard(selectedPlayer);
 	}
 
+	public void Drunk() {
+		if (!originalCard.Contains("Drunk") || currentCard != "Drunk") return;
+		Debug.Log("My Original Card Was " + card);
+		int rand = Random.Range(1, 4);
+		string tempCard = card;
+		card = ViewCard(numPlayers + rand);
+		Debug.Log("My New Card Is " + card);
+		ChangingMiddleCardServerRpc(tempCard, rand);
+		TurnThingsServerRpc();
+	}
+
 	void Mason(int selectedPlayer) {
 		if (!originalCard.Contains("Mason") || currentCard != "Mason") return;
 		if (!ViewCard(selectedPlayer).Contains("Mason") && SearchForCard("Mason") > 1) {
+			youNeedAnotherTry = true;
+		}
+	}
+
+	void Werewolf(int selectedPlayer) {
+		if (!originalCard.Contains("Werewolf") || currentCard != "Werewolf") return;
+		if (SearchForCard("Werewolf") == 1) {
+			if (selectedPlayer <= numPlayers) {
+				youNeedAnotherTry = true;
+				return;
+			}
+			else {
+				seenCard = ViewCard(selectedPlayer);
+				return;
+			}
+		}
+		if (!ViewCard(selectedPlayer).Contains("Werewolf") && SearchForCard("Werewolf") > 1) {
 			youNeedAnotherTry = true;
 		}
 	}
@@ -111,12 +140,13 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	void Pressed(int plaNum) {
 		if (!IsLocalPlayer || !myTurn) return;
 		Seer(plaNum);
-		if (plaNum <= numPlayers) {
+		Werewolf(plaNum);
+		if (plaNum <= PlayerNumFinder()) {
 			Mason(plaNum);
 			Robber(plaNum);
 			Voting(plaNum);
 		}
-		if (!CheckIfMiddleCard(currentCard) && plaNum > numPlayers) youNeedAnotherTry = true;
+		if (!CheckIfMiddleCard(currentCard) && plaNum > PlayerNumFinder()) youNeedAnotherTry = true;
 		if (youNeedAnotherTry) {
 			youNeedAnotherTry = false;
 			return;
@@ -129,9 +159,9 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	string ViewCard(int chosenPlayer) {
-		if (chosenPlayer > numPlayers) {
+		if (chosenPlayer > PlayerNumFinder()) {
 			foreach (GameObject mid in GameObject.FindGameObjectsWithTag("Middle")) {
-				if (chosenPlayer - numPlayers == mid.GetComponent<MiddleScript>().myNumber) {
+				if (chosenPlayer - PlayerNumFinder() == mid.GetComponent<MiddleScript>().myNumber) {
 					return mid.GetComponent<MiddleScript>().card;
 				}
 			}
@@ -146,7 +176,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		return "error";
 	}
 
-	int SearchForCard(string searchCard) {
+	public int SearchForCard(string searchCard) {
 		int i = 0;
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			if (pla.GetComponent<PlayerScriptAlpha>().card.Contains(searchCard)) i++;
@@ -164,6 +194,20 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			if (palNumbre == ExtractPlayerNumber(pla)) {
 				pla.GetComponent<PlayerScriptAlpha>().card = newCard;
+			}
+		}
+	}
+
+	[ServerRpc]
+	void ChangingMiddleCardServerRpc(string newCard, int midNum) {
+		ChangingMiddleCardClientRpc(newCard, midNum);
+	}
+
+	[ClientRpc]
+	void ChangingMiddleCardClientRpc(string newCard, int midNum) {
+		foreach (GameObject mid in GameObject.FindGameObjectsWithTag("Middle")) {
+			if (midNum == mid.GetComponent<MiddleScript>().myNumber) {
+				mid.GetComponent<MiddleScript>().card = newCard;
 			}
 		}
 	}

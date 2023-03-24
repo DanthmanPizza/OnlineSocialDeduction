@@ -702,11 +702,14 @@ MonoBehaviour:
   playersDoneCounter: 0
   votes: 
   cards:
-  - Robber
+  - Werewolf
+  - Werewolf
+  - Mason
+  - Mason
   - Seer
   - RobberSeer
-  - Seer
-  - Seer
+  - Robber
+  - Drunk
   orderOfOperations:
   - Doppelganger
   - Werewolf

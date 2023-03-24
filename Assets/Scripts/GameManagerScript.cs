@@ -10,6 +10,7 @@ public class GameManagerScript : NetworkBehaviour {
     public int[] votes;
     public string[] cards;
     public string[] orderOfOperations = {"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Voting"};
+    public string winner;
 
     void Update() {
         if (Input.GetKeyDown("g")) {
@@ -85,6 +86,26 @@ public class GameManagerScript : NetworkBehaviour {
         }
         if (!tie) return currentLargestLocation;
         return -1;
+    }
+
+    void WhoWon() {
+        string deadCards = "";
+        bool werewolfPresent = false;
+        foreach (GameObject player in FindPlayers()) {
+            if (!player.GetComponent<PlayerScriptAlpha>().alive) deadCards += player.GetComponent<PlayerScriptAlpha>().card;
+            if (player.GetComponent<PlayerScriptAlpha>().SearchForCard("Werewolf") > 0) werewolfPresent = true;
+        }
+        bool someoneDied = false;
+        if (deadCards != "") someoneDied = true;
+        bool tannerDied = false;
+        if (deadCards.Contains("Tanner")) tannerDied = true;
+        bool werewolfDied = false;
+        if (deadCards.Contains("Werewolf")) werewolfDied = true;
+        if (tannerDied && werewolfDied) winner = "Tanner And Villagers Win!";
+        if ((!werewolfDied && werewolfPresent && !tannerDied)) winner = "Werewolfs Win!";
+        if ((!someoneDied && !werewolfPresent) || werewolfDied) winner = "Villagers Win!";
+        if (tannerDied) winner = "Tanner Wins!";
+        winner = "Nobody Won!";
     }
 
     [ServerRpc]
