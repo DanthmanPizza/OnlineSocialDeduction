@@ -86,12 +86,10 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	public void Drunk() {
-		if (!originalCard.Contains("Drunk") || currentCard != "Drunk") return;
-		Debug.Log("My Original Card Was " + card);
+		if (!originalCard.Contains("Drunk") || currentCard != "Drunk" || !IsLocalPlayer) return;
 		int rand = Random.Range(1, 4);
 		string tempCard = card;
-		card = ViewCard(numPlayers + rand);
-		Debug.Log("My New Card Is " + card);
+		ChangingCardServerRpc(ViewCard(numPlayers + rand), playerNum);
 		ChangingMiddleCardServerRpc(tempCard, rand);
 		TurnThingsServerRpc();
 	}

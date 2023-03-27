@@ -422,8 +422,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 284738150}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -72, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 3, z: 40}
+  m_LocalPosition: {x: -80, y: 0, z: 0}
+  m_LocalScale: {x: 25, y: 3, z: 35}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1656622594}
@@ -552,8 +552,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 478350866}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 72, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 3, z: 40}
+  m_LocalPosition: {x: 80, y: 0, z: 0}
+  m_LocalScale: {x: 25, y: 3, z: 35}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1656622594}
@@ -721,6 +721,7 @@ MonoBehaviour:
   - Drunk
   - Insomniac
   - Voting
+  winner: 
 --- !u!114 &486193295
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -938,7 +939,7 @@ Transform:
   m_GameObject: {fileID: 759679769}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 20, y: 3, z: 40}
+  m_LocalScale: {x: 25, y: 3, z: 35}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1656622594}

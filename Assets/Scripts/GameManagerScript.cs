@@ -102,10 +102,10 @@ public class GameManagerScript : NetworkBehaviour {
         bool werewolfDied = false;
         if (deadCards.Contains("Werewolf")) werewolfDied = true;
         if (tannerDied && werewolfDied) winner = "Tanner And Villagers Win!";
-        if ((!werewolfDied && werewolfPresent && !tannerDied)) winner = "Werewolfs Win!";
-        if ((!someoneDied && !werewolfPresent) || werewolfDied) winner = "Villagers Win!";
-        if (tannerDied) winner = "Tanner Wins!";
-        winner = "Nobody Won!";
+        else if ((!werewolfDied && werewolfPresent && !tannerDied)) winner = "Werewolves Win!";
+        else if ((!someoneDied && !werewolfPresent) || werewolfDied) winner = "Villagers Win!";
+        else if (tannerDied) winner = "Tanner Wins!";
+        else winner = "Nobody Won!";
     }
 
     [ServerRpc]
@@ -132,6 +132,7 @@ public class GameManagerScript : NetworkBehaviour {
         votes[chosenPlayer]++;
         if (playersDoneCounter >= FindPlayers().Length  - 1 && FindIndexOfLargestInArray(votes) > -1) {
             FindPlayers()[FindIndexOfLargestInArray(votes)].SendMessage("Murdered");
+            WhoWon();
         }
     }
 }
