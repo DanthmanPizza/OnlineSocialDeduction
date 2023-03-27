@@ -21,6 +21,4 @@ public class NetworkManagerUI : MonoBehaviour {
             NetworkManager.Singleton.StartClient();
         });
     }
-
-    
 }
