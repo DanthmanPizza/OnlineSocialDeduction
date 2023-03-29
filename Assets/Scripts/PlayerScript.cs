@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
 
-public class PlayerScriptAlpha : NetworkBehaviour {
+public class PlayerScript : NetworkBehaviour {
 	int playerNum;
 	int numPlayers;
 	public string originalCard = "";
@@ -16,6 +16,8 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public bool alive = true;
 	bool sawMiddle = false;
 	bool youNeedAnotherTry = false;
+	int selectedPlayerStorage = -1;
+	string selectedPlayerCardStorage = "";
 
 
 		//i am severerly out of my depth
@@ -30,16 +32,23 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	void StartGame() {
-		alive = true;
-		numPlayers = PlayerNumFinder();
 		GetInPosition();
+		StartGameClientRpc();
 		CameraOnOffClientRpc();
 	}
 
 	public void GetInPosition() {
+		Debug.Log("what the heck is going on");
 		transform.Rotate(0, playerNum * 360 / (numPlayers + 1), 0);
 		transform.Translate(0, 0, startGameMovement);
 		transform.Rotate(0, 180, 0);
+		Debug.Log("what huh");
+	}
+
+	[ClientRpc]
+	void StartGameClientRpc() {
+		alive = true;
+		numPlayers = PlayerNumFinder();
 	}
 
 	public int PlayerNumFinder() {
@@ -94,6 +103,21 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		TurnThingsServerRpc();
 	}
 
+	void Troublemaker(int selectedPlayer) {
+		if (!originalCard.Contains("Troublemaker") || currentCard != "Troublemaker") return;
+		if (selectedPlayerStorage > -1) {
+			ChangingCardServerRpc(ViewCard(selectedPlayer), selectedPlayerStorage);
+			ChangingCardServerRpc(selectedPlayerCardStorage, selectedPlayer);
+			selectedPlayerStorage = -1;
+			selectedPlayerCardStorage = "";
+		}
+		else {
+			selectedPlayerStorage = selectedPlayer;
+			selectedPlayerCardStorage = ViewCard(selectedPlayer);
+			youNeedAnotherTry = true;
+		}
+	}
+
 	void Mason(int selectedPlayer) {
 		if (!originalCard.Contains("Mason") || currentCard != "Mason") return;
 		if (!ViewCard(selectedPlayer).Contains("Mason") && SearchForCard("Mason") > 1) {
@@ -142,6 +166,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		if (plaNum <= PlayerNumFinder()) {
 			Mason(plaNum);
 			Robber(plaNum);
+			Troublemaker(plaNum);
 			Voting(plaNum);
 		}
 		if (!CheckIfMiddleCard(currentCard) && plaNum > PlayerNumFinder()) youNeedAnotherTry = true;
@@ -153,7 +178,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	}
 
 	int ExtractPlayerNumber(GameObject ploe) {
-		return ploe.GetComponent<PlayerScriptAlpha>().playerNum;
+		return ploe.GetComponent<PlayerScript>().playerNum;
 	}
 
 	string ViewCard(int chosenPlayer) {
@@ -167,7 +192,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 		else {
 			foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 				if (chosenPlayer == ExtractPlayerNumber(pla)) {
-					return pla.GetComponent<PlayerScriptAlpha>().card;
+					return pla.GetComponent<PlayerScript>().card;
 				}
 			}
 		}
@@ -177,7 +202,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	public int SearchForCard(string searchCard) {
 		int i = 0;
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
-			if (pla.GetComponent<PlayerScriptAlpha>().card.Contains(searchCard)) i++;
+			if (pla.GetComponent<PlayerScript>().card.Contains(searchCard)) i++;
 		}
 		return i;
 	}
@@ -191,7 +216,7 @@ public class PlayerScriptAlpha : NetworkBehaviour {
 	void ChangingCardClientRpc(string newCard, int palNumbre) {
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			if (palNumbre == ExtractPlayerNumber(pla)) {
-				pla.GetComponent<PlayerScriptAlpha>().card = newCard;
+				pla.GetComponent<PlayerScript>().card = newCard;
 			}
 		}
 	}

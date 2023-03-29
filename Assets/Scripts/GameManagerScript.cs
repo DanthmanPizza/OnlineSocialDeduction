@@ -92,8 +92,8 @@ public class GameManagerScript : NetworkBehaviour {
         string deadCards = "";
         bool werewolfPresent = false;
         foreach (GameObject player in FindPlayers()) {
-            if (!player.GetComponent<PlayerScriptAlpha>().alive) deadCards += player.GetComponent<PlayerScriptAlpha>().card;
-            if (player.GetComponent<PlayerScriptAlpha>().SearchForCard("Werewolf") > 0) werewolfPresent = true;
+            if (!player.GetComponent<PlayerScript>().alive) deadCards += player.GetComponent<PlayerScript>().card;
+            if (player.GetComponent<PlayerScript>().SearchForCard("Werewolf") > 0) werewolfPresent = true;
         }
         bool someoneDied = false;
         if (deadCards != "") someoneDied = true;

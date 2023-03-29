@@ -708,6 +708,7 @@ MonoBehaviour:
   - Mason
   - Seer
   - RobberSeer
+  - Troublemaker
   - Robber
   - Drunk
   orderOfOperations:
@@ -1764,5 +1765,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3aacb7c5e1caf08458ff1c4502a2211e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  serverButton: {fileID: 825272382}
   hostButton: {fileID: 1775937700}
   clientButton: {fileID: 805946295}
