@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 3827798466368451563}
   - component: {fileID: 3827798466368451562}
   - component: {fileID: 2995527993188095480}
-  - component: {fileID: -9165516408230253131}
   - component: {fileID: -5773254655351854619}
+  - component: {fileID: -9165516408230253131}
   - component: {fileID: 2521798822427037081}
   - component: {fileID: 3691381725885202742}
   - component: {fileID: 1476446500258910515}
@@ -64,6 +64,26 @@ Skybox:
   m_GameObject: {fileID: 3827798466368451561}
   m_Enabled: 1
   m_CustomSkybox: {fileID: 2100000, guid: 1e5521650656f1a4cb6c441cb0a47723, type: 2}
+--- !u!114 &-5773254655351854619
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3827798466368451561}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3f3f2e6d0dd5e7848a1a0e2e5c8fd5bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  originalCard: 
+  card: 
+  startGameMovement: 314
+  myTurn: 0
+  seenCard: 
+  seenCardTwo: 
+  currentCard: 
+  alive: 1
 --- !u!114 &-9165516408230253131
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -90,26 +110,6 @@ MonoBehaviour:
   ScaleThreshold: 0.01
   InLocalSpace: 0
   Interpolate: 1
---- !u!114 &-5773254655351854619
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3827798466368451561}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3f3f2e6d0dd5e7848a1a0e2e5c8fd5bc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  originalCard: 
-  card: 
-  startGameMovement: 0
-  myTurn: 0
-  seenCard: 
-  seenCardTwo: 
-  currentCard: 
-  alive: 1
 --- !u!33 &2521798822427037081
 MeshFilter:
   m_ObjectHideFlags: 0
