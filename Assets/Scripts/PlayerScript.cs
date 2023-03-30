@@ -4,8 +4,9 @@ using Unity.Netcode;
 using UnityEngine;
 
 public class PlayerScript : NetworkBehaviour {
-	int playerNum;
-	int numPlayers;
+	
+	public int playerNum;
+	public int numPlayers;
 	public string originalCard = "";
 	public string card;
 	public int startGameMovement;
@@ -32,17 +33,15 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	void StartGame() {
-		GetInPosition();
 		StartGameClientRpc();
+		GetInPosition();
 		CameraOnOffClientRpc();
 	}
 
 	public void GetInPosition() {
-		Debug.Log("what the heck is going on");
 		transform.Rotate(0, playerNum * 360 / (numPlayers + 1), 0);
 		transform.Translate(0, 0, startGameMovement);
 		transform.Rotate(0, 180, 0);
-		Debug.Log("what huh");
 	}
 
 	[ClientRpc]
