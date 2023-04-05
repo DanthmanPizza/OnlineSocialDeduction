@@ -65,6 +65,7 @@ public class PlayerScript : NetworkBehaviour {
 
 	public void RecieveCard(string carb) {
 		card = carb;
+		if (IsOwner) ChangeCardImageServerRpc(carb);
 		if (originalCard == "") originalCard = carb;
 	}
 
@@ -215,6 +216,7 @@ public class PlayerScript : NetworkBehaviour {
 	void ChangingCardClientRpc(string newCard, int palNumbre) {
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			if (palNumbre == ExtractPlayerNumber(pla)) {
+				SendMessage("ChangeCardImageServerRpc", newCard);
 				pla.GetComponent<PlayerScript>().card = newCard;
 			}
 		}
@@ -231,6 +233,18 @@ public class PlayerScript : NetworkBehaviour {
 			if (midNum == mid.GetComponent<MiddleScript>().myNumber) {
 				mid.GetComponent<MiddleScript>().card = newCard;
 			}
+		}
+	}
+
+	[ServerRpc]
+	void ChangeCardImageServerRpc(string carp) {
+		ChangeCardImageClientRpc(carp);
+	}
+
+	[ClientRpc]
+	void ChangeCardImageClientRpc(string carp) {
+		if (IsLocalPlayer)  {
+			GameObject.FindGameObjectWithTag("Image").SendMessage("ChangeImage", carp);
 		}
 	}
 

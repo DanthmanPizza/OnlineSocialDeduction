@@ -130,8 +130,10 @@ public class GameManagerScript : NetworkBehaviour {
     [ClientRpc]
     void VoteClientRpc(int chosenPlayer) {
         votes[chosenPlayer]++;
-        if (playersDoneCounter >= FindPlayers().Length  - 1 && FindIndexOfLargestInArray(votes) > -1) {
-            FindPlayers()[FindIndexOfLargestInArray(votes)].SendMessage("Murdered");
+        if (playersDoneCounter >= FindPlayers().Length - 1) {
+            if (FindIndexOfLargestInArray(votes) > -1) {
+                FindPlayers()[FindIndexOfLargestInArray(votes)].SendMessage("Murdered");
+            }
             WhoWon();
         }
     }

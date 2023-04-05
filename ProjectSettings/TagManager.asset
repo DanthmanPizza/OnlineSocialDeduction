@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Manager
   - Middle
+  - Image
   layers:
   - Default
   - TransparentFX
