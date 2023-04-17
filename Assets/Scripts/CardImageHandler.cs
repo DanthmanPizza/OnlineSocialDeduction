@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class CardImageHandler : MonoBehaviour {
@@ -20,4 +21,10 @@ public class CardImageHandler : MonoBehaviour {
     void ChangeImage(string newImage) {
         this.GetComponent<Image>().sprite = Resources.Load<Sprite>(newImage);
     }
+
+    public void CardClicked() {
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			pla.SendMessage("ClickedMyCard");
+		}
+	}
 }

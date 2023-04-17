@@ -58,6 +58,7 @@ public class PlayerScript : NetworkBehaviour {
 		myTurn = true;
 		currentCard = whatsOccuring;
 		Drunk();
+		Insomniac(false);
 		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting") {
 			if (IsOwner) TurnThingsServerRpc();
 		}
@@ -65,7 +66,7 @@ public class PlayerScript : NetworkBehaviour {
 
 	public void RecieveCard(string carb) {
 		card = carb;
-		if (IsOwner) ChangeCardImageServerRpc(carb);
+		if (IsOwner) ChangeCardImageServerRpc();
 		if (originalCard == "") originalCard = carb;
 	}
 
@@ -142,6 +143,17 @@ public class PlayerScript : NetworkBehaviour {
 		}
 	}
 
+	void Insomniac(bool finished) {
+		if (!originalCard.Contains("Insomniac") || currentCard != "Insomniac" || !IsOwner) return;
+		if (finished) {
+			GameObject.FindGameObjectWithTag("Image").SendMessage("HideCard");
+			TurnThingsServerRpc();
+		}
+		else {
+			GameObject.FindGameObjectWithTag("Image").SendMessage("ShowCard");
+		}
+	}
+
 	public void Voting(int selectedPlayer) {
 		if (currentCard != "Voting") return;
 		RegisterVoteServerRpc(selectedPlayer);
@@ -157,6 +169,10 @@ public class PlayerScript : NetworkBehaviour {
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			pla.SendMessage("Pressed", playerNum);
 		}
+	}
+
+	void ClickedMyCard() {
+		Insomniac(true);
 	}
 
 	void Pressed(int plaNum) {
@@ -216,8 +232,8 @@ public class PlayerScript : NetworkBehaviour {
 	void ChangingCardClientRpc(string newCard, int palNumbre) {
 		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
 			if (palNumbre == ExtractPlayerNumber(pla)) {
-				SendMessage("ChangeCardImageServerRpc", newCard);
 				pla.GetComponent<PlayerScript>().card = newCard;
+				if (IsOwner) ChangeCardImageServerRpc();
 			}
 		}
 	}
@@ -237,14 +253,14 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	[ServerRpc]
-	void ChangeCardImageServerRpc(string carp) {
-		ChangeCardImageClientRpc(carp);
+	void ChangeCardImageServerRpc() {
+		ChangeCardImageClientRpc();
 	}
 
 	[ClientRpc]
-	void ChangeCardImageClientRpc(string carp) {
+	void ChangeCardImageClientRpc() {
 		if (IsLocalPlayer)  {
-			GameObject.FindGameObjectWithTag("Image").SendMessage("ChangeImage", carp);
+			GameObject.FindGameObjectWithTag("Image").SendMessage("ChangeImage", card);
 		}
 	}
 

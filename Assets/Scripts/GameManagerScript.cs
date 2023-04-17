@@ -134,6 +134,7 @@ public class GameManagerScript : NetworkBehaviour {
             if (FindIndexOfLargestInArray(votes) > -1) {
                 FindPlayers()[FindIndexOfLargestInArray(votes)].SendMessage("Murdered");
             }
+            GameObject.FindGameObjectWithTag("Image").SendMessage("ShowCard");
             WhoWon();
         }
     }
