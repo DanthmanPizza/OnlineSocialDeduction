@@ -7,6 +7,7 @@ TagManager:
   - Manager
   - Middle
   - Image
+  - AllInButton
   layers:
   - Default
   - TransparentFX

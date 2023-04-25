@@ -12,11 +12,9 @@ public class GameManagerScript : NetworkBehaviour {
     public string[] orderOfOperations = {"Doppelganger", "Werewolf", "Minion", "Mason", "Seer", "Robber", "Troublemaker", "Drunk", "Insomniac", "Voting"};
     public string winner;
 
-    void Update() {
-        if (Input.GetKeyDown("g")) {
-            Shuffle();
-            StartGameClientRpc(ArrToString(cards));
-        }
+    void StartGame() {
+        Shuffle();
+        StartGameClientRpc(ArrToString(cards));
     }
 
     [ClientRpc]
@@ -132,7 +130,11 @@ public class GameManagerScript : NetworkBehaviour {
         votes[chosenPlayer]++;
         if (playersDoneCounter >= FindPlayers().Length - 1) {
             if (FindIndexOfLargestInArray(votes) > -1) {
-                FindPlayers()[FindIndexOfLargestInArray(votes)].SendMessage("Murdered");
+                GameObject killedPlayer = FindPlayers()[FindIndexOfLargestInArray(votes)];
+                killedPlayer.SendMessage("Murdered");
+                if (killedPlayer.GetComponent<PlayerScript>().card.Contains("Hunter")) {
+                    FindPlayers()[killedPlayer.GetComponent<PlayerScript>().voteStorage].SendMessage("Murdered");
+                }
             }
             GameObject.FindGameObjectWithTag("Image").SendMessage("ShowCard");
             WhoWon();

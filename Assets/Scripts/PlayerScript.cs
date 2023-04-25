@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerScript : NetworkBehaviour {
 	
@@ -19,17 +20,13 @@ public class PlayerScript : NetworkBehaviour {
 	bool youNeedAnotherTry = false;
 	int selectedPlayerStorage = -1;
 	string selectedPlayerCardStorage = "";
+	public int voteStorage;
 
 
 		//i am severerly out of my depth
-	void Awake() {
+	void Start() {
+		if (IsHost) GameObject.FindGameObjectWithTag("AllInButton").SendMessage("Activate");
 		playerNum = PlayerNumFinder();
-	}
-
-	void Update() {
-		if (Input.GetKeyDown("g")) {
-			StartGame();
-		}
 	}
 
 	void StartGame() {
@@ -161,6 +158,7 @@ public class PlayerScript : NetworkBehaviour {
 
 	[ClientRpc]
 	void CameraOnOffClientRpc() {
+		GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>().enabled = false;
 		if (IsLocalPlayer) return;
 		this.GetComponent<Camera>().enabled = false;
 	}
@@ -290,6 +288,7 @@ public class PlayerScript : NetworkBehaviour {
 
 	[ServerRpc]
 	void RegisterVoteServerRpc(int chosenPlayer) {
+		voteStorage = chosenPlayer;
 		GameObject.FindGameObjectWithTag("Manager").SendMessage("VoteServerRpc", chosenPlayer);
 	}
 }
