@@ -21,12 +21,16 @@ public class PlayerScript : NetworkBehaviour {
 	int selectedPlayerStorage = -1;
 	string selectedPlayerCardStorage = "";
 	public int voteStorage;
-
+	public bool doppelsomniac = false;
 
 		//i am severerly out of my depth
+	void Awake() {
+		playerNum = PlayerNumFinder();
+	}
+
+	//I despise that I have to use Awake and Start. I am so mad. absolutely livid.
 	void Start() {
 		if (IsHost) GameObject.FindGameObjectWithTag("AllInButton").SendMessage("Activate");
-		playerNum = PlayerNumFinder();
 	}
 
 	void StartGame() {
@@ -56,8 +60,9 @@ public class PlayerScript : NetworkBehaviour {
 		currentCard = whatsOccuring;
 		Drunk();
 		Insomniac(false);
-		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting") {
-			if (IsOwner) TurnThingsServerRpc();
+		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting" && IsOwner) {
+			if (originalCard.Contains("Doppelganger") && (DoppelCheck("Werewolf") || DoppelCheck("Mason") || (doppelsomniac && currentCard == "Insomniac"))) return;
+			TurnThingsServerRpc();
 		}
 	}
 
@@ -68,14 +73,14 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	public void Robber(int selectedPlayer) {
-		if (!originalCard.Contains("Robber") || currentCard != "Robber") return;
+		if (!originalCard.Contains("Robber") || currentCard != "Robber" && CheckDoppel("Robber")) return;
 		string myNewCard = ViewCard(selectedPlayer);
 		ChangingCardServerRpc(card, selectedPlayer);
 		ChangingCardServerRpc(myNewCard, playerNum);
 	}
 
 	public void Seer(int selectedPlayer) {
-		if (!originalCard.Contains("Seer") || currentCard != "Seer") return;
+		if (!originalCard.Contains("Seer") || currentCard != "Seer" && CheckDoppel("Seer")) return;
 		if (sawMiddle) {
 			sawMiddle = false;
 			if (selectedPlayer <= PlayerNumFinder()) {
@@ -93,7 +98,7 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	public void Drunk() {
-		if (!originalCard.Contains("Drunk") || currentCard != "Drunk" || !IsLocalPlayer) return;
+		if (!originalCard.Contains("Drunk") || currentCard != "Drunk" || !IsLocalPlayer && CheckDoppel("Drunk")) return;
 		int rand = Random.Range(1, 4);
 		string tempCard = card;
 		ChangingCardServerRpc(ViewCard(numPlayers + rand), playerNum);
@@ -102,7 +107,7 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	void Troublemaker(int selectedPlayer) {
-		if (!originalCard.Contains("Troublemaker") || currentCard != "Troublemaker") return;
+		if (!originalCard.Contains("Troublemaker") || currentCard != "Troublemaker" && CheckDoppel("Troublemaker")) return;
 		if (selectedPlayerStorage > -1) {
 			ChangingCardServerRpc(ViewCard(selectedPlayer), selectedPlayerStorage);
 			ChangingCardServerRpc(selectedPlayerCardStorage, selectedPlayer);
@@ -117,14 +122,14 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	void Mason(int selectedPlayer) {
-		if (!originalCard.Contains("Mason") || currentCard != "Mason") return;
+		if (!(originalCard.Contains("Mason") || (card.Contains("Mason") && card.Contains("Doppelganger"))) || currentCard != "Mason") return;
 		if (!ViewCard(selectedPlayer).Contains("Mason") && SearchForCard("Mason") > 1) {
 			youNeedAnotherTry = true;
 		}
 	}
 
 	void Werewolf(int selectedPlayer) {
-		if (!originalCard.Contains("Werewolf") || currentCard != "Werewolf") return;
+		if (!(originalCard.Contains("Werewolf") || (card.Contains("Werewolf") && card.Contains("Doppelganger"))) || currentCard != "Werewolf") return;
 		if (SearchForCard("Werewolf") == 1) {
 			if (selectedPlayer <= numPlayers) {
 				youNeedAnotherTry = true;
@@ -140,8 +145,26 @@ public class PlayerScript : NetworkBehaviour {
 		}
 	}
 
+	void Doppelganger(int selectedPlayer) {
+		if (!originalCard.Contains("Doppelganger") || currentCard != "Doppelganger") return;
+		if (card.Length > originalCard.Length) {
+			Seer(selectedPlayer);
+			Robber(selectedPlayer);
+			Troublemaker(selectedPlayer);
+			Drunk();
+			return;
+		}
+		string myNewRole = ViewCard(selectedPlayer);
+		ChangingCardServerRpc(card + myNewRole, playerNum);
+		if (card.Contains("Insomniac")) doppelsomniac = true; //Doppelsomniac! :)
+		if (card.Contains("Seer") || card.Contains("Robber") || card.Contains("Troublemaker")) {
+			youNeedAnotherTry = true;
+			return;
+		}
+	}
+
 	void Insomniac(bool finished) {
-		if (!originalCard.Contains("Insomniac") || currentCard != "Insomniac" || !IsOwner) return;
+		if (!(originalCard.Contains("Insomniac") || (originalCard.Contains("Doppelganger") && doppelsomniac)) || currentCard != "Insomniac" || !IsOwner) return;
 		if (finished) {
 			GameObject.FindGameObjectWithTag("Image").SendMessage("HideCard");
 			TurnThingsServerRpc();
@@ -178,6 +201,7 @@ public class PlayerScript : NetworkBehaviour {
 		Seer(plaNum);
 		Werewolf(plaNum);
 		if (plaNum <= PlayerNumFinder()) {
+			Doppelganger(plaNum);
 			Mason(plaNum);
 			Robber(plaNum);
 			Troublemaker(plaNum);
@@ -273,6 +297,14 @@ public class PlayerScript : NetworkBehaviour {
 	bool CheckIfMiddleCard(string card) {
 		if (card.Contains("Seer") || card.Contains("Werewolf")) return true;
 		return false;
+	}
+
+	bool DoppelCheck(string carg) {
+		return (card.Contains(carg) && currentCard == carg);
+	}
+
+	bool CheckDoppel(string carg) {
+		return (!card.Contains("Doppelganger") && currentCard != "Doppelganger" && !card.Contains(carg));
 	}
 
 	[ServerRpc]

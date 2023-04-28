@@ -19,7 +19,12 @@ public class CardImageHandler : MonoBehaviour {
     }
 
     void ChangeImage(string newImage) {
-        this.GetComponent<Image>().sprite = Resources.Load<Sprite>(newImage);
+        if (!newImage.Contains("Doppelganger")) {
+            this.GetComponent<Image>().sprite = Resources.Load<Sprite>(newImage);
+        }
+        else {
+            this.GetComponent<Image>().sprite = Resources.Load<Sprite>("Doppelganger");
+        }
     }
 
     public void CardClicked() {

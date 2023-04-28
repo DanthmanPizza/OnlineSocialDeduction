@@ -13,7 +13,7 @@ public class GameManagerScript : NetworkBehaviour {
     public string winner;
 
     void StartGame() {
-        Shuffle();
+        //Shuffle();
         StartGameClientRpc(ArrToString(cards));
     }
 
