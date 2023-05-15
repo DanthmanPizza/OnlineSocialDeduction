@@ -664,17 +664,18 @@ MonoBehaviour:
   - Doppelganger
   - Drunk
   - Seer
-  - Mason
-  - Mason
   - Villager
-  - Werewolf
-  - Troublemaker
-  - Tanner
-  - Robber
-  - Hunter
-  - Werewolf
   - Insomniac
+  - Hunter
+  - Tanner
   - Villager
+  - Mason
+  - Mason
+  - Werewolf
+  - Minion
+  - Werewolf
+  - Robber
+  - Troublemaker
   - Villager
   orderOfOperations:
   - Doppelganger

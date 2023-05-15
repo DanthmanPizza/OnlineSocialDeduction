@@ -21,7 +21,7 @@ public class PlayerScript : NetworkBehaviour {
 	int selectedPlayerStorage = -1;
 	string selectedPlayerCardStorage = "";
 	public int voteStorage;
-	public bool doppelsomniac = false;
+	public int[] werewolves;
 
 		//i am severerly out of my depth
 	void Awake() {
@@ -58,10 +58,11 @@ public class PlayerScript : NetworkBehaviour {
 	public void MyTurn(string whatsOccuring) {
 		myTurn = true;
 		currentCard = whatsOccuring;
+		Minion();
 		Drunk();
 		Insomniac(false);
-		if (!originalCard.Contains(whatsOccuring) && whatsOccuring != "Voting" && IsOwner) {
-			if (originalCard.Contains("Doppelganger") && (DoppelCheck("Werewolf") || DoppelCheck("Mason") || (doppelsomniac && currentCard == "Insomniac"))) return;
+		if (IsOwner && originalCard.Contains("Doppelganger") && DoppelInstant(originalCard) && originalCard.Contains(whatsOccuring)) TurnThingsServerRpc();
+		if (!originalCard.Contains(whatsOccuring) && !whatsOccuring.Equals("Voting") && IsOwner) {
 			TurnThingsServerRpc();
 		}
 	}
@@ -69,18 +70,20 @@ public class PlayerScript : NetworkBehaviour {
 	public void RecieveCard(string carb) {
 		card = carb;
 		if (IsOwner) ChangeCardImageServerRpc();
-		if (originalCard == "") originalCard = carb;
+		if (originalCard.Equals("")) originalCard = carb;
 	}
 
 	public void Robber(int selectedPlayer) {
-		if (!originalCard.Contains("Robber") || currentCard != "Robber" && CheckDoppel("Robber")) return;
+		if (!originalCard.Contains("Robber") || !(currentCard.Equals("Robber") || currentCard.Equals("Doppelganger"))) return;
+		if (originalCard.Contains("Doppelganger") && currentCard.Equals("Robber")) return;
 		string myNewCard = ViewCard(selectedPlayer);
 		ChangingCardServerRpc(card, selectedPlayer);
 		ChangingCardServerRpc(myNewCard, playerNum);
 	}
 
 	public void Seer(int selectedPlayer) {
-		if (!originalCard.Contains("Seer") || currentCard != "Seer" && CheckDoppel("Seer")) return;
+		if (!originalCard.Contains("Seer") || !(currentCard.Equals("Seer") || currentCard.Equals("Doppelganger"))) return;
+		if (originalCard.Contains("Doppelganger") && currentCard.Equals("Seer")) return;
 		if (sawMiddle) {
 			sawMiddle = false;
 			if (selectedPlayer <= PlayerNumFinder()) {
@@ -98,7 +101,8 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	public void Drunk() {
-		if (!originalCard.Contains("Drunk") || currentCard != "Drunk" || !IsLocalPlayer && CheckDoppel("Drunk")) return;
+		if (!originalCard.Contains("Drunk") || !(currentCard.Equals("Drunk") || currentCard.Equals("Doppelganger")) || !IsLocalPlayer) return;
+		if (originalCard.Contains("Doppelganger") && currentCard.Equals("Drunk")) return;
 		int rand = Random.Range(1, 4);
 		string tempCard = card;
 		ChangingCardServerRpc(ViewCard(numPlayers + rand), playerNum);
@@ -107,7 +111,8 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	void Troublemaker(int selectedPlayer) {
-		if (!originalCard.Contains("Troublemaker") || currentCard != "Troublemaker" && CheckDoppel("Troublemaker")) return;
+		if (!originalCard.Contains("Troublemaker") || !(currentCard.Equals("Troublemaker") || currentCard.Equals("Doppelganger"))) return;
+		if (originalCard.Contains("Doppelganger") && currentCard.Equals("Troublemaker")) return;
 		if (selectedPlayerStorage > -1) {
 			ChangingCardServerRpc(ViewCard(selectedPlayer), selectedPlayerStorage);
 			ChangingCardServerRpc(selectedPlayerCardStorage, selectedPlayer);
@@ -121,15 +126,43 @@ public class PlayerScript : NetworkBehaviour {
 		}
 	}
 
+	void Doppelganger(int selectedPlayer) {
+		print("bonjour");
+		if (!originalCard.Contains("Doppelganger") || !currentCard.Equals("Doppelganger")) return;
+		if (DoppelInstant(card)) {
+			return;
+		}
+		string doppelCard = ViewCard(selectedPlayer);
+		ChangingOriginalCardServerRpc(card + doppelCard, playerNum);
+		ChangingCardServerRpc(card + doppelCard, playerNum);
+		if (DoppelInstant(doppelCard)) {
+			youNeedAnotherTry = true;
+		}
+	}
+
 	void Mason(int selectedPlayer) {
-		if (!(originalCard.Contains("Mason") || (card.Contains("Mason") && card.Contains("Doppelganger"))) || currentCard != "Mason") return;
+		if (!originalCard.Contains("Mason") || !currentCard.Equals("Mason")) return;
 		if (!ViewCard(selectedPlayer).Contains("Mason") && SearchForCard("Mason") > 1) {
 			youNeedAnotherTry = true;
 		}
 	}
 
+	void Minion() {
+		if (!originalCard.Contains("Minion") || !currentCard.Equals("Minion") || !IsLocalPlayer) return;
+		int i = 0;
+		int[] werewolfs = new int[SearchForCard("Werewolf")];
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (ViewCard(ExtractPlayerNumber(pla)).Contains("Werewolf")) {
+				werewolfs[i] = ExtractPlayerNumber(pla);
+				i++;
+			}
+		}
+		werewolves = werewolfs;
+		TurnThingsServerRpc();
+	}
+
 	void Werewolf(int selectedPlayer) {
-		if (!(originalCard.Contains("Werewolf") || (card.Contains("Werewolf") && card.Contains("Doppelganger"))) || currentCard != "Werewolf") return;
+		if (!originalCard.Contains("Werewolf") || !currentCard.Equals("Werewolf")) return;
 		if (SearchForCard("Werewolf") == 1) {
 			if (selectedPlayer <= numPlayers) {
 				youNeedAnotherTry = true;
@@ -145,26 +178,8 @@ public class PlayerScript : NetworkBehaviour {
 		}
 	}
 
-	void Doppelganger(int selectedPlayer) {
-		if (!originalCard.Contains("Doppelganger") || currentCard != "Doppelganger") return;
-		if (card.Length > originalCard.Length) {
-			Seer(selectedPlayer);
-			Robber(selectedPlayer);
-			Troublemaker(selectedPlayer);
-			Drunk();
-			return;
-		}
-		string myNewRole = ViewCard(selectedPlayer);
-		ChangingCardServerRpc(card + myNewRole, playerNum);
-		if (card.Contains("Insomniac")) doppelsomniac = true; //Doppelsomniac! :)
-		if (card.Contains("Seer") || card.Contains("Robber") || card.Contains("Troublemaker")) {
-			youNeedAnotherTry = true;
-			return;
-		}
-	}
-
 	void Insomniac(bool finished) {
-		if (!(originalCard.Contains("Insomniac") || (originalCard.Contains("Doppelganger") && doppelsomniac)) || currentCard != "Insomniac" || !IsOwner) return;
+		if (!originalCard.Contains("Insomniac") || !currentCard.Equals("Insomniac") || !IsOwner) return;
 		if (finished) {
 			GameObject.FindGameObjectWithTag("Image").SendMessage("HideCard");
 			TurnThingsServerRpc();
@@ -175,7 +190,7 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	public void Voting(int selectedPlayer) {
-		if (currentCard != "Voting") return;
+		if (!currentCard.Equals("Voting")) return;
 		RegisterVoteServerRpc(selectedPlayer);
 	}
 
@@ -201,12 +216,12 @@ public class PlayerScript : NetworkBehaviour {
 		Seer(plaNum);
 		Werewolf(plaNum);
 		if (plaNum <= PlayerNumFinder()) {
-			Doppelganger(plaNum);
 			Mason(plaNum);
 			Robber(plaNum);
 			Troublemaker(plaNum);
 			Voting(plaNum);
 		}
+		Doppelganger(plaNum);
 		if (!CheckIfMiddleCard(currentCard) && plaNum > PlayerNumFinder()) youNeedAnotherTry = true;
 		if (youNeedAnotherTry) {
 			youNeedAnotherTry = false;
@@ -261,6 +276,20 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	[ServerRpc]
+	void ChangingOriginalCardServerRpc(string newCard, int playNumre) {
+		ChangingOriginalCardClientRpc(newCard, playNumre);
+	}
+
+	[ClientRpc]
+	void ChangingOriginalCardClientRpc(string newCard, int playNumre) {
+		foreach (GameObject pla in GameObject.FindGameObjectsWithTag("Player")) {
+			if (playNumre == ExtractPlayerNumber(pla)) {
+				pla.GetComponent<PlayerScript>().originalCard = newCard;
+			}
+		}
+	}
+
+	[ServerRpc]
 	void ChangingMiddleCardServerRpc(string newCard, int midNum) {
 		ChangingMiddleCardClientRpc(newCard, midNum);
 	}
@@ -294,17 +323,17 @@ public class PlayerScript : NetworkBehaviour {
 		alive = false;
 	}
 
-	bool CheckIfMiddleCard(string card) {
-		if (card.Contains("Seer") || card.Contains("Werewolf")) return true;
+	bool DoppelInstant(string carv) {
+		if (carv.Contains("Seer") || 
+		carv.Contains("Robber") ||
+		carv.Contains("Troublemaker") ||
+		carv.Contains("Drunk")) return true;
 		return false;
 	}
 
-	bool DoppelCheck(string carg) {
-		return (card.Contains(carg) && currentCard == carg);
-	}
-
-	bool CheckDoppel(string carg) {
-		return (!card.Contains("Doppelganger") && currentCard != "Doppelganger" && !card.Contains(carg));
+	bool CheckIfMiddleCard(string card) {
+		if (originalCard.Contains("Seer") || originalCard.Contains("Werewolf")) return true;
+		return false;
 	}
 
 	[ServerRpc]

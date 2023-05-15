@@ -86,6 +86,7 @@ MonoBehaviour:
   seenCardTwo: 
   currentCard: 
   alive: 1
+  voteStorage: 0
 --- !u!114 &-9165516408230253131
 MonoBehaviour:
   m_ObjectHideFlags: 0
