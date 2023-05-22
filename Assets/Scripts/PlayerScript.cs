@@ -61,8 +61,10 @@ public class PlayerScript : NetworkBehaviour {
 		Minion();
 		Drunk();
 		Insomniac(false);
-		if (IsOwner && originalCard.Contains("Doppelganger") && DoppelInstant(originalCard) && originalCard.Contains(whatsOccuring)) TurnThingsServerRpc();
-		if (!originalCard.Contains(whatsOccuring) && !whatsOccuring.Equals("Voting") && IsOwner) {
+		if (IsOwner && originalCard.Contains("Doppelganger") && DoppelInstant(originalCard) && originalCard.Contains(whatsOccuring)) {
+			TurnThingsServerRpc();
+		}
+		if (!originalCard.Contains(currentCard) && !currentCard.Equals("Voting") && IsOwner) {
 			TurnThingsServerRpc();
 		}
 	}
@@ -103,6 +105,7 @@ public class PlayerScript : NetworkBehaviour {
 	public void Drunk() {
 		if (!originalCard.Contains("Drunk") || !(currentCard.Equals("Drunk") || currentCard.Equals("Doppelganger")) || !IsLocalPlayer) return;
 		if (originalCard.Contains("Doppelganger") && currentCard.Equals("Drunk")) return;
+		if (originalCard.Contains("Drunk") && !originalCard.Contains("Doppelganger") && currentCard.Equals("Doppelganger")) return;
 		int rand = Random.Range(1, 4);
 		string tempCard = card;
 		ChangingCardServerRpc(ViewCard(numPlayers + rand), playerNum);
@@ -127,7 +130,6 @@ public class PlayerScript : NetworkBehaviour {
 	}
 
 	void Doppelganger(int selectedPlayer) {
-		print("bonjour");
 		if (!originalCard.Contains("Doppelganger") || !currentCard.Equals("Doppelganger")) return;
 		if (DoppelInstant(card)) {
 			return;
@@ -135,6 +137,7 @@ public class PlayerScript : NetworkBehaviour {
 		string doppelCard = ViewCard(selectedPlayer);
 		ChangingOriginalCardServerRpc(card + doppelCard, playerNum);
 		ChangingCardServerRpc(card + doppelCard, playerNum);
+		if (doppelCard.Contains("Drunk")) Drunk();
 		if (DoppelInstant(doppelCard)) {
 			youNeedAnotherTry = true;
 		}

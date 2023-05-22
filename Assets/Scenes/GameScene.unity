@@ -663,20 +663,20 @@ MonoBehaviour:
   cards:
   - Doppelganger
   - Drunk
-  - Seer
+  - Robber
   - Villager
+  - Seer
+  - Troublemaker
   - Insomniac
+  - Minion
+  - Villager
+  - Werewolf
   - Hunter
   - Tanner
   - Villager
   - Mason
   - Mason
   - Werewolf
-  - Minion
-  - Werewolf
-  - Robber
-  - Troublemaker
-  - Villager
   orderOfOperations:
   - Doppelganger
   - Werewolf
